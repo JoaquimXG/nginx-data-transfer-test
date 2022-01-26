@@ -1,0 +1,6 @@
+*/logs/*
+*.log
+*.bin
+node_modules/
+
+.env
