@@ -1,0 +1,44 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    env: 
+      HTTP_PORT: 80
+      FILE_NAME: random.bin
+      TEST_NAME: test
+    user: ubuntu
+    repoPath: "/home/{{user}}/repo"
+      
+  tasks:
+    - name: Install NPM
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      loop:
+        - npm
+        - nodejs
+
+    - name: Checkout Git
+      git:
+        repo: 'https://github.com/JoaquimXG/nginx-data-transfer-test.git'
+        dest: "{{ repoPath }}"
+    
+    - name: Create Service for node server
+      template:
+        src: server.service.j2
+        dest: /etc/systemd/system/server.service
+        owner: root
+        mode: '0644'
+
+    - name:
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+
+    - name: Start node server service
+      service:
+        name: server
+        state: started
+        enabled: yes
