@@ -1,0 +1,10 @@
+#cloud-config
+packages:
+ - nodejs
+ - npm
+
+runcmd:
+ - [git, clone, 'https://github.com/JoaquimXG/nginx-data-transfer-test.git', /home/ubuntu/repo] 
+ - [cd, /home/ubuntu/repo/client]
+ - [npm, ci]
+ - [npm, run, prod]
