@@ -26,7 +26,7 @@ const downloadFile = async (url, dest) => {
 const isHostOnline = (hostname, cb) => {
     log.debug("Checking if host is online")
     let interval = setInterval(async () => {
-        if (await isReachable(`${hostname}:80`)) {
+        if (await isReachable(`http://${hostname}`)) {
             log.debug("Host online: starting downloads")
             clearInterval(interval)
             cb()
@@ -44,29 +44,32 @@ const downloadXFiles = (hostname, count, numDownloads) => {
         return
     }
 
-    isHostOnline(hostname, () => {
-        log.info(`Downloading: ${count} from ${hostname}`)
-        downloadFile(url, dest)
-            .then((res) => {
-                textLog(path.join(__dirname, "logs", "downloads.log"),
-                    { testName: process.env.TEST_NAME, event: "DownloadSuccess", downloadHostname: hostname })
-                log.info(`Completed: ${count} from ${hostname}`)
-                downloadXFiles(hostname, ++count, numDownloads)
-            })
-            .catch((err) => {
-                log.error(err)
-                textLog(path.join(__dirname, "logs", "downloads.log"),
-                    { testName: process.env.TEST_NAME, event: "DownloadFailed", downloadHostname: hostname })
-                log.warn(`Failed: ${count} from ${hostname}`)
-                downloadXFiles(hostname, count, numDownloads)
-            })
-    })
+    log.info(`Downloading: ${count} from ${hostname}`)
+    downloadFile(url, dest)
+        .then((res) => {
+            textLog(path.join(__dirname, "logs", "downloads.log"),
+                { testName: process.env.TEST_NAME, event: "DownloadSuccess", host: hostname })
+            log.info(`Completed: ${count} from ${hostname}`)
+            downloadXFiles(hostname, ++count, numDownloads)
+        })
+        .catch((err) => {
+            log.error(err)
+            textLog(path.join(__dirname, "logs", "downloads.log"),
+                { testName: process.env.TEST_NAME, event: "DownloadFailed", host: hostname })
+            log.warn(`Failed: ${count} from ${hostname}`)
+            downloadXFiles(hostname, count, numDownloads)
+        })
 }
 
 const main = async () => {
-    // TODO: Handle multiple hosts at the same time
-    isHostOnline(process.env.DOWNLOAD_HOSTNAME, () => {
-        downloadXFiles(process.env.DOWNLOAD_HOSTNAME, 0, process.env.NUM_DOWNLOADS)
+    hosts = process.env.DOWNLOAD_HOSTNAMES.trim().split(",").map(host => host.trim())
+    
+    log.debug(`Downloading from ${hosts}`)
+    
+    hosts.forEach(host => {
+        isHostOnline(host, () => {
+            downloadXFiles(host, 0, process.env.NUM_DOWNLOADS)
+        })
     })
 }
 
