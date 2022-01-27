@@ -6,7 +6,7 @@ const textLog = require("./utils/textLog")
 const log = require("./utils/logger.js")
 const isReachable = require("is-reachable");
 
-const downloadFile = async (url, dest) => {
+const downloadFile = (url, dest) => {
     var file = fs.createWriteStream(dest);
     return new Promise((resolve, reject) => {
         http.get(url, (res) => {
@@ -23,17 +23,23 @@ const downloadFile = async (url, dest) => {
     })
 };
 
-const isHostOnline = (hostname, cb) => {
+const waitTillHostOnline = (hostname, cb, delay = 5000) => {
     log.debug("Checking if host is online")
-    let interval = setInterval(async () => {
-        if (await isReachable(`http://${hostname}`)) {
-            log.debug("Host online: starting downloads")
-            clearInterval(interval)
-            cb()
-        }
-        else
-            log.warn(`host ${hostname} is not reachable. Trying again`)
-    }, 3000)
+    isReachable(`http://${hostname}`)
+        .then((res) => {
+            if (res) {
+                log.debug("Host online: starting downloads")
+                cb()
+            }
+            else {
+                log.warn(`host ${hostname} is not reachable`)
+                setTimeout(()=> waitTillHostOnline(hostname, cb), delay)
+            }
+        })
+        .catch((err) => {
+            log.error(err)
+            setTimeout(()=> waitTillHostOnline(hostname, cb), delay)
+        })
 }
 
 const downloadXFiles = (hostname, count, numDownloads) => {
@@ -57,17 +63,17 @@ const downloadXFiles = (hostname, count, numDownloads) => {
             textLog(path.join(__dirname, "logs", "downloads.log"),
                 { testName: process.env.TEST_NAME, event: "DownloadFailed", host: hostname })
             log.warn(`Failed: ${count} from ${hostname}`)
-            downloadXFiles(hostname, count, numDownloads)
+            setTimeout(() => downloadXFiles(hostname, count, numDownloads), 1000)
         })
 }
 
-const main = async () => {
+const main = () => {
     hosts = process.env.DOWNLOAD_HOSTNAMES.trim().split(",").map(host => host.trim())
     
     log.debug(`Downloading from ${hosts}`)
     
     hosts.forEach(host => {
-        isHostOnline(host, () => {
+        waitTillHostOnline(host, () => {
             downloadXFiles(host, 0, process.env.NUM_DOWNLOADS)
         })
     })
