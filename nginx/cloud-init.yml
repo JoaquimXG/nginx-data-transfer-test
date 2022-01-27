@@ -1,0 +1,6 @@
+#cloud-config
+packages:
+ - nginx
+   
+runcmd:
+  - [systemctl, start, --no-block, nginx.service]
