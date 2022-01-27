@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --inspect -e js,mjs,json,css"
+    "dev": "nodemon --inspect -e js,mjs,json,css",
+    "prod": "node index.js"
   },
   "author": "Joaquim Gomez",
   "license": "ISC",
