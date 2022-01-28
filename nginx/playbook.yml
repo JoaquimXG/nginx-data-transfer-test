@@ -12,14 +12,6 @@
         state: latest
         update_cache: yes
 
-    - name: Template available NGINX site
-      template:
-        src: server.conf.j2
-        dest: "{{ availableSite }}"
-        owner: root
-        mode: '0644'
-      notify: Restart Nginx
-          
     - name: Copy nginx.conf
       copy:
         src: nginx.conf
@@ -28,6 +20,14 @@
         mode: '0644'
       notify: Restart Nginx
         
+    - name: Template available NGINX site
+      template:
+        src: server.conf.j2
+        dest: "{{ availableSite }}"
+        owner: root
+        mode: '0644'
+      notify: Restart Nginx
+          
     - name: Create a symbolic link
       file:
         src: "{{ availableSite }}"
