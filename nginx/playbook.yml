@@ -1,0 +1,48 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    availableSite: /etc/nginx/sites-available/server.conf
+    enabledSite: /etc/nginx/sites-enabled/server.conf
+      
+  tasks:
+    - name: Install NGINX
+      apt:
+        name: nginx
+        state: latest
+        update_cache: yes
+
+    - name: Template available NGINX site
+      template:
+        src: server.conf.j2
+        dest: "{{ availableSite }}"
+        owner: root
+        mode: '0644'
+      notify: Restart Nginx
+          
+    - name: Copy nginx.conf
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        mode: '0644'
+      notify: Restart Nginx
+        
+    - name: Create a symbolic link
+      file:
+        src: "{{ availableSite }}"
+        dest: "{{ enabledSite }}"
+        owner: root
+        state: link
+
+    - name:
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
