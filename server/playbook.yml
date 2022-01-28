@@ -24,10 +24,10 @@
         repo: 'https://github.com/JoaquimXG/nginx-data-transfer-test.git'
         dest: "{{ repoPath }}"
     
-    - name: npm Install
+    - name: Install NPM Dependancies
       npm:
         ci: yes
-        path: "{{ repoPath }}"
+        path: "{{ repoPath }}/server"
 
     - name: Create Service for node server
       template:

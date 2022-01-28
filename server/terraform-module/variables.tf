@@ -6,8 +6,6 @@ variable subnet_id {}
 variable subdomain {}
 variable playbook_path {}
 
-variable reverse_proxy_target {}
-
 variable security_group_id {
   default = null
 }

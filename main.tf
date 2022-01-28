@@ -22,7 +22,18 @@ provider aws {
         tags = var.default_tags
     }
 
-    alias = "west"
+    alias = "london"
+}
+
+provider aws {
+    profile = "personal"
+    region = "eu-west-1"
+
+    default_tags {
+        tags = var.default_tags
+    }
+
+    alias = "ireland"
 }
 
 module nginx {
@@ -35,18 +46,41 @@ module nginx {
     subnet_id = "subnet-f012828a"
     subdomain = "nginx-test"
     security_group_id = "sg-04ae5e949212df7db"
-    reverse_proxy_target = "joaquimgomez.com"
+    reverse_proxy_target = module.server.public_ip
     playbook_path = "./nginx/playbook.yml"
 
     providers = {
-        aws = aws.west
+        aws = aws.london
     }
 }
 
-output nginx_ip {
-    value = "${module.nginx.ip}"
+module server {
+    source = "./server/terraform-module"
+
+    tag_name = "server-test"
+    region = "eu-west-2"
+    az = "eu-west-2a"
+    vpc_id = "vpc-18d09270"
+    subnet_id = "subnet-f012828a"
+    subdomain = "server-test"
+    security_group_id = "sg-04ae5e949212df7db"
+    playbook_path = "./server/playbook.yml"
+
+    providers = {
+        aws = aws.london
+    }
 }
 
-output nginx_dns {
-    value = "${module.nginx.dns}"
+output server {
+    value = {
+        ip = "${module.server.public_ip}"
+        dns = "${module.server.dns}"
+    }
+}
+
+output nginx {
+    value = {
+        ip = "${module.nginx.public_ip}"
+        dns = "${module.nginx.dns}"
+    }
 }
