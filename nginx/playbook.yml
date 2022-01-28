@@ -3,7 +3,7 @@
   become: yes
   vars:
     availableSite: /etc/nginx/sites-available/server.conf
-    enabledSite: /etc/nginx/sites-enabled/server.conf
+    enabledSite: /etc/nginx/sites-enabled/default
       
   tasks:
     - name: Install NGINX
@@ -34,6 +34,7 @@
         dest: "{{ enabledSite }}"
         owner: root
         state: link
+      notify: Restart Nginx
 
     - name:
       ufw:
