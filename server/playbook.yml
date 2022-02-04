@@ -2,10 +2,9 @@
 - hosts: all
   become: yes
   vars:
-    env: 
-      HTTP_PORT: 80
-      FILE_NAME: random.bin
-      TEST_NAME: test
+    # HTTP_PORT: 
+    # FILE_NAME:
+    # TEST_NAME: 
     user: ubuntu
     repoPath: "/home/{{user}}/repo"
       
@@ -23,11 +22,18 @@
       git:
         repo: 'https://github.com/JoaquimXG/nginx-data-transfer-test.git'
         dest: "{{ repoPath }}"
-    
+          
     - name: Install NPM Dependancies
       npm:
         ci: yes
         path: "{{ repoPath }}/server"
+    
+    - name: Create .env file 
+      template: 
+        src: .env.j2
+        dest: "{{ repoPath }}/.env"
+        owner: root
+        mode: '0644'
 
     - name: Create Service for node server
       template:

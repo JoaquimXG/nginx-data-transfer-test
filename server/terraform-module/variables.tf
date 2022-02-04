@@ -6,6 +6,10 @@ variable subnet_id {}
 variable subdomain {}
 variable playbook_path {}
 
+variable ansible_vars {
+  type = map
+}
+
 variable security_group_id {
   default = null
 }

@@ -1,3 +1,8 @@
+locals {
+	formatted_string = join(" ", [for key, value in var.ansible_vars: "${key}=${value}"])
+}
+
+
 resource aws_instance server {
   ami           = data.aws_ami.ubuntu.id
   key_name = var.key_name
@@ -20,7 +25,7 @@ resource aws_instance server {
   }
   
   provisioner local-exec {
-    command = "ansible-playbook -i ${self.public_ip}, -u ubuntu --private-key ${var.priv_key_path} ${var.playbook_path}" 
+    command = "ansible-playbook -i ${self.public_ip}, -u ubuntu --private-key ${var.priv_key_path} ${var.playbook_path} -e '${local.formatted_string}'" 
   }
 
   tags = {
