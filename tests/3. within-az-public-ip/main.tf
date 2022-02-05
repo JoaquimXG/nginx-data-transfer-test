@@ -7,15 +7,12 @@ terraform {
 	}
 }
 
-variable transfer_test {
-    default = "3"
-}
-
-variable default_tags {
-    default = {
+locals {
+    transfer_test = "3"
+    tags = {
         Project = "NGINX-Test"
         env = "Test"
-        transfer_test = var.transfer_test
+        transfer_test = local.transfer_test
     }
 }
 
@@ -24,19 +21,18 @@ provider aws {
     region = "eu-west-2"
 
     default_tags {
-        tags = var.default_tags
+        tags = local.tags
     }
 }
 
 module nginx {
     source = "github.com/joaquimxg/tf-instance-module"
 
-    tag_name = "t3-nginx"
+    tag_name = "t${local.transfer_test}-nginx"
     region = "eu-west-2"
     az = "eu-west-2a"
     vpc_id = "vpc-18d09270"
     subnet_id = "subnet-f012828a"
-    subdomain = "nginx-test"
     security_group_id = "sg-04ae5e949212df7db"
     playbook_path = "../nginx/playbook.yml"
     ansible_vars = {
@@ -45,7 +41,7 @@ module nginx {
 
     dns = {
         domain = "joaquimgomez.com"
-        subdomain = "test-${var.transfer_test}-nginx"
+        subdomain = "test-${local.transfer_test}-nginx"
         ttl = 60
     }
 
@@ -54,7 +50,7 @@ module nginx {
 module server {
     source = "github.com/joaquimxg/tf-instance-module"
 
-    tag_name = "t3-server"
+    tag_name = "t${local.transfer_test}-server"
     region = "eu-west-2"
     az = "eu-west-2a"
     vpc_id = "vpc-18d09270"
@@ -64,12 +60,12 @@ module server {
     ansible_vars = {
         HTTP_PORT = "80"
         FILE_NAME = "random.bin"
-        TEST_NAME = "${var.transfer_test}"
+        TEST_NAME = "${local.transfer_test}"
     }
 
     dns = {
         domain = "joaquimgomez.com"
-        subdomain = "test-${var.transfer_test}-server"
+        subdomain = "test-${local.transfer_test}-server"
         ttl = 60
     }
 }
