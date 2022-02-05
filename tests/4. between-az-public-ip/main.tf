@@ -1,7 +1,7 @@
 terraform {
 	backend "s3" {
 		bucket = "xjg.terraformstate"
-		key = "4-between-az-private-ip.tfstate"
+		key = "4-between-az-public-ip.tfstate"
 		region = "eu-west-2"
 		dynamodb_table = "terraform-state"
 	}
