@@ -31,7 +31,7 @@
     - name: Create .env file 
       template: 
         src: .env.j2
-        dest: "{{ repoPath }}/.env"
+        dest: "{{ repoPath }}/server/.env"
         owner: root
         mode: '0644'
 
