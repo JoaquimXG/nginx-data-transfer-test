@@ -25,31 +25,48 @@ provider aws {
 }
 
 module nginx {
-    source = "../../nginx/terraform-module"
+    source = "github.com/joaquimxg/tf-instance-module"
 
-    tag_name = "t1-nginx"
+    tag_name = "nginx-test"
     region = "eu-west-2"
     az = "eu-west-2a"
     vpc_id = "vpc-18d09270"
     subnet_id = "subnet-f012828a"
-    subdomain = "nginx-test"
     security_group_id = "sg-04ae5e949212df7db"
-    reverse_proxy_target = module.server.private_ip
     playbook_path = "../../nginx/playbook.yml"
+    ansible_vars = {
+        public_ip = module.server.public_ip
+    }
 
+    dns = {
+        domain = "joaquimgomez.com"
+        subdomain = "nginx-test"
+        ttl = 60
+    }
 }
 
 module server {
-    source = "../../server/terraform-module"
+    source = "github.com/joaquimxg/tf-instance-module"
 
-    tag_name = "t1-server"
+    tag_name = "server-test"
     region = "eu-west-2"
     az = "eu-west-2a"
     vpc_id = "vpc-18d09270"
     subnet_id = "subnet-f012828a"
-    subdomain = "server-test"
+
+    dns = {
+        domain = "joaquimgomez.com"
+        subdomain = "server-test"
+        ttl = 60
+    }
     security_group_id = "sg-04ae5e949212df7db"
+
     playbook_path = "../../server/playbook.yml"
+    ansible_vars = {
+        HTTP_PORT = "80"
+        FILE_NAME = "random.bin"
+        TEST_NAME = "test"
+    }
 }
 
 output server {
