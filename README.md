@@ -24,8 +24,8 @@ A collection of scripts and cloud-init files for testing DataTransfer costs in A
     - Testing transfer within AZ using public IP
 4. client - NGINX(r1:az1) - server(r1:az2)
     - Testing tranfer between AZ using public IP
-5. client - NGINX(r1) -- server(r2)
+5. client - NGINX(r1) - server(r2)
+    - Testing transfer between regions using public IP
+6. client - NGINX(r1) -- server(r2)
     - Testing transfer between regions using private IP 
     - **NOT PLANNING TO TEST THIS**
-6. client - NGINX(r1) - server(r2)
-    - Testing transfer between regions using public IP

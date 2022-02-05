@@ -11,6 +11,7 @@ variable default_tags {
     default = {
         Project = "NGINX-Test"
         env = "Test"
+        transfer_test = "1"
     }
 }
 
