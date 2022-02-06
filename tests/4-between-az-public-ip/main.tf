@@ -7,6 +7,14 @@ terraform {
 	}
 }
 
+variable workspace_iam_roles {
+    default = {
+        aws2 = "arn:aws:iam::232870009830:role/OrganizationAccountAccessRole"
+        nginx = "arn:aws:iam::261567139318:role/OrganizationAccountAccessRole"
+        default = null
+    }
+}
+
 locals {
     transfer_test = "4"
     tags = {
@@ -23,17 +31,27 @@ provider aws {
     default_tags {
         tags = local.tags
     }
+
+    assume_role {
+        role_arn = "${var.workspace_iam_roles[terraform.workspace]}"
+    } 
+}
+
+module network {
+    source = "github.com/JoaquimXG/terraform-modules/default-vpc-and-subnet"
+
+    az = "eu-west-2a"
 }
 
 module nginx {
-    source = "github.com/joaquimxg/tf-instance-module"
+    source = "github.com/JoaquimXG/terraform-modules/ansible-instance"
 
     tag_name = "t${local.transfer_test}-nginx"
     region = "eu-west-2"
     az = "eu-west-2a"
-    vpc_id = "vpc-18d09270"
-    subnet_id = "subnet-f012828a"
-    security_group_id = "sg-04ae5e949212df7db"
+    vpc_id = module.network.vpc_id
+    subnet_id = module.network.subnet_id
+    # security_group_id = "sg-04ae5e949212df7db"
     playbook_path = "../../nginx/playbook.yml"
     ansible_vars = {
         public_ip = module.server.public_ip
@@ -48,14 +66,14 @@ module nginx {
 }
 
 module server {
-    source = "github.com/joaquimxg/tf-instance-module"
+    source = "github.com/JoaquimXG/terraform-modules/ansible-instance"
 
     tag_name = "t${local.transfer_test}-server"
     region = "eu-west-2"
     az = "eu-west-2b"
-    vpc_id = "vpc-18d09270"
-    subnet_id = "subnet-d1b2149d"
-    security_group_id = "sg-04ae5e949212df7db"
+    vpc_id = module.network.vpc_id
+    subnet_id = module.network.subnet_id
+    # security_group_id = "sg-04ae5e949212df7db"
     playbook_path = "../../server/playbook.yml"
     ansible_vars = {
         HTTP_PORT = "80"
