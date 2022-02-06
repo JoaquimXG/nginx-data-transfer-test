@@ -1,14 +1,14 @@
 terraform {
 	backend "s3" {
 		bucket = "xjg.terraformstate"
-		key = "4-between-az-public-ip.tfstate"
+		key = "2-between-az-private-ip.tfstate"
 		region = "eu-west-2"
 		dynamodb_table = "terraform-state"
 	}
 }
 
 locals {
-    transfer_test = "4"
+    transfer_test = "2"
     tags = {
         Project = "NGINX-Test"
         env = "Test"
@@ -34,9 +34,9 @@ module nginx {
     vpc_id = "vpc-18d09270"
     subnet_id = "subnet-f012828a"
     security_group_id = "sg-04ae5e949212df7db"
-    playbook_path = "../nginx/playbook.yml"
+    playbook_path = "../../nginx/playbook.yml"
     ansible_vars = {
-        public_ip = module.server.public_ip
+        public_ip = module.server.private_ip
     }
 
     dns = {
@@ -56,7 +56,7 @@ module server {
     vpc_id = "vpc-18d09270"
     subnet_id = "subnet-d1b2149d"
     security_group_id = "sg-04ae5e949212df7db"
-    playbook_path = "../server/playbook.yml"
+    playbook_path = "../../server/playbook.yml"
     ansible_vars = {
         HTTP_PORT = "80"
         FILE_NAME = "random.bin"
