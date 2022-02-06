@@ -47,6 +47,16 @@ NUM_DOWNLOADS = 10
 	terraform -chdir='$(TEST_DIR_5)' apply -auto-approve
 #	NUM_DOWNLOADS=$(NUM_DOWNLOADS) TEST_NAME=5 DOWNLOAD_HOSTNAMES=`terraform -chdir=$(TEST_DIR_5) output -json nginx | jq .dns -r` npm --prefix client start
 
+# An attempt to generalise the 5 rules above follows. 
+# The generalisation was ultimately unsuccessful as I was unable to find a method of interpolating the '%' wildcard into a TEST_DIR_X variable name in the pre-requisites.
+# The commmands operate appropriately as can be seen in the generalisation of the clean_x commands
+# .PHONY: run_%
+# run_%: $(TEST_DIR_$*)/.terraform.lock.hcl
+# 	export AWS_PROFILE=${AWS_PROFILE}
+# 	terraform -chdir='$(TEST_DIR_$*)' apply -auto-approve
+# 	NUM_DOWNLOADS=$(NUM_DOWNLOADS) TEST_NAME=$* DOWNLOAD_HOSTNAMES=`terraform -chdir=$(TEST_DIR_$*) output -json nginx | jq .dns -r` npm --prefix client start
+
+
 .PHONY: clean_%
 clean_%:
 	echo $(TEST_DIR_$*)
