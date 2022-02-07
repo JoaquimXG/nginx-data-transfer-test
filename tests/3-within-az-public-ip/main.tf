@@ -18,7 +18,7 @@ variable workspace_iam_roles {
 locals {
     transfer_test = "3"
     tags = {
-        Project = "NGINX-Test"
+        project = "NGINX-Test"
         env = "Test"
         transfer_test = local.transfer_test
     }
