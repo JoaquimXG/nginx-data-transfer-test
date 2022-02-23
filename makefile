@@ -28,6 +28,8 @@ clean_%:
 	echo $(TEST_DIR_$*)
 	-terraform workspace new $(WORKSPACE)
 	terraform workspace select $(WORKSPACE);\
+	terraform -chdir='$(TEST_DIR_$*)' init
+	terraform workspace select $(WORKSPACE);\
 	terraform -chdir='$(TEST_DIR_$*)' destroy -auto-approve
 
 .PHONY: clean
