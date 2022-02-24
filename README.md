@@ -15,7 +15,11 @@ To ensure that the results of tests are not polluted:
     - Modify main.tf files within tests/ folder to reference chosen test domain, currently joaquimgomez.com
 4. Setup tests 
     - See below
+6. Setup analysis tools in AWS
+    - Ensure Cost and Usage Report is being generated
+    - Setup flow logs for the VPCs/subnets that will see traffic for ease of analysis
 5. Run tests with make, e.g., `make test_5`
+
 
 ### AWS Roles and Permissions
 

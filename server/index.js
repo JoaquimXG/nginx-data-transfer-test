@@ -15,7 +15,7 @@ app.get("/", (req,res) => {
 
 app.get("/download", (req, res) => {
     let fPath = path.resolve(__dirname, "app/static",  FILE_NAME)
-    generateFile(1024*1024*100, fPath)
+    generateFile(1024*1024*1024, fPath)
     
     res.download(fPath, err => {
         if (err) log.warn(err)
