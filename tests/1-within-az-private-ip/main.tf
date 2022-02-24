@@ -31,6 +31,10 @@ provider aws {
     default_tags {
         tags = local.tags
     }
+
+    assume_role {
+        role_arn = "${var.workspace_iam_roles[terraform.workspace]}"
+    } 
 }
 
 module network {

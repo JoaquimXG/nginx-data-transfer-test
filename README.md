@@ -11,7 +11,7 @@ To ensure that the results of tests are not polluted:
     - See below
 3. Setup test domain
     - Select a test domain 
-    - Create Route53 hosted zone in test account for domain
+    - Create Route53 hosted zone in test account for domain: `aws route53 create-hosted-zone --name ${domain}`
     - Modify main.tf files within tests/ folder to reference chosen test domain, currently joaquimgomez.com
 4. Setup tests 
     - See below
@@ -67,6 +67,8 @@ public IP transfer| -
 private IP transfer| -- 
 etc.
 
+### Tests
+
 1. client - NGINX(r1:az1) -- server(r1:az1)
     - Testing transfer within az using private IP
 2. client - NGINX(r1:az1) -- server(r1:az2)
@@ -81,6 +83,5 @@ etc.
     - Testing transfer between regions using private IP 
     - **NOT PLANNING TO TEST THIS**
     
-## Permissions for tests
-    
+## Required Permissions
     # TODO

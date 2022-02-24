@@ -37,10 +37,16 @@ provider aws {
     } 
 }
 
-module network {
+module network_a {
     source = "github.com/JoaquimXG/terraform-modules/default-vpc-and-subnet"
 
     az = "eu-west-2a"
+}
+
+module network_b {
+    source = "github.com/JoaquimXG/terraform-modules/default-vpc-and-subnet"
+
+    az = "eu-west-2b"
 }
 
 module nginx {
@@ -49,8 +55,8 @@ module nginx {
     tag_name = "t${local.transfer_test}-nginx"
     region = "eu-west-2"
     az = "eu-west-2a"
-    vpc_id = module.network.vpc_id
-    subnet_id = module.network.subnet_id
+    vpc_id = module.network_a.vpc_id
+    subnet_id = module.network_a.subnet_id
     # security_group_id = "sg-04ae5e949212df7db"
     playbook_path = "../../nginx/playbook.yml"
     ansible_vars = {
@@ -71,8 +77,8 @@ module server {
     tag_name = "t${local.transfer_test}-server"
     region = "eu-west-2"
     az = "eu-west-2b"
-    vpc_id = module.network.vpc_id
-    subnet_id = module.network.subnet_id
+    vpc_id = module.network_b.vpc_id
+    subnet_id = module.network_b.subnet_id
     # security_group_id = "sg-04ae5e949212df7db"
     playbook_path = "../../server/playbook.yml"
     ansible_vars = {

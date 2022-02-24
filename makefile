@@ -17,7 +17,7 @@ TEST_DIR_5 = $(TEST_DIR)/5-between-region-public-ip
 .PHONY: test_%
 test_%:
 	-terraform -chdir='$(TEST_DIR_$*)' workspace new $(WORKSPACE)
-	terraform workspace select $(WORKSPACE);\
+	terraform -chdir='$(TEST_DIR_$*)' workspace select $(WORKSPACE);\
 	terraform -chdir='$(TEST_DIR_$*)' init
 	terraform -chdir='$(TEST_DIR_$*)' workspace select $(WORKSPACE);\
 	terraform -chdir='$(TEST_DIR_$*)' apply -auto-approve
